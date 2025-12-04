@@ -75,13 +75,65 @@
         .bot { align-self: flex-start; background: var(--msg-bot); color: var(--text-main); border-bottom-left-radius: 2px; }
 
         .input-area { padding: 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; background: var(--bg-chat); }
-        input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-sidebar); color: var(--text-main); outline: none; }
+        .input-area input[type="text"] { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-sidebar); color: var(--text-main); outline: none; }
         
         /* Utility Buttons */
         .icon-btn { background: none; border: 1px solid var(--border); color: var(--text-main); padding: 8px; border-radius: 6px; cursor: pointer; }
         .icon-btn:hover { background: var(--hover-item); }
         .del-btn { color: #ef4444; border-color: #ef4444; }
         .del-btn:hover { background: #fee2e2; }
+
+        /* Thanh trượt cài đặt AI */
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .slider-row input[type="range"] {
+            flex: 1;
+        }
+        .slider-value {
+            width: 50px;
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        /* Settings modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        .modal {
+            background: var(--bg-sidebar);
+            padding: 20px 24px;
+            border-radius: 10px;
+            width: 380px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .modal h3 { margin-top: 0; margin-bottom: 16px; }
+        .modal-row { margin-bottom: 14px; }
+        .modal-row label { display:block; font-size:0.9rem; margin-bottom:4px; color:var(--text-sub); }
+        .modal-row .value { float:right; font-size:0.9rem; }
+        .modal-footer { margin-top: 18px; display:flex; justify-content:flex-end; gap:10px; }
+        .btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-chat);
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--msg-user);
+            border-color: var(--msg-user);
+            color: #fff;
+        }
 
     </style>
 </head>
@@ -91,6 +143,42 @@
         <div class="sidebar-header">
             <button class="new-chat-btn" onclick="startNewChat()">+ Cuộc trò chuyện mới</button>
         </div>
+
+    <!-- Modal cài đặt tham số AI -->
+    <div class="modal-backdrop" id="settingsBackdrop">
+        <div class="modal">
+            <h3>Cài đặt tham số AI</h3>
+
+            <div class="modal-row">
+                <label for="tempRange">Độ sáng tạo (Temperature)</label>
+                <div class="slider-row">
+                    <input type="range" id="tempRange" min="0.1" max="2.0" step="0.1" value="0.8" oninput="syncTemp()">
+                    <span class="slider-value" id="tempValue">0.8</span>
+                </div>
+            </div>
+
+            <div class="modal-row">
+                <label for="maxTokensRange">Độ dài tối đa (Max Tokens)</label>
+                <div class="slider-row">
+                    <input type="range" id="maxTokensRange" min="64" max="2048" step="64" value="512" oninput="syncMaxTokens()">
+                    <span class="slider-value" id="maxTokensValue">512</span>
+                </div>
+            </div>
+
+            <div class="modal-row">
+                <label for="toppRange">Top P</label>
+                <div class="slider-row">
+                    <input type="range" id="toppRange" min="0.1" max="1.0" step="0.05" value="0.95" oninput="syncTopP()">
+                    <span class="slider-value" id="toppValue">0.95</span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn" onclick="closeSettingsModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
         
         <div class="history-list" id="historyList">
             <div style="padding:10px; color:gray; font-style:italic">Đang tải lịch sử...</div>
@@ -111,6 +199,7 @@
     <div class="main-chat">
         <div class="chat-header">
             <h3 style="margin:0">🤖 Chatbox AI</h3>
+            <button class="icon-btn" onclick="openSettingsModal()">Cài đặt tham số AI</button>
         </div>
         
         <div class="chat-box" id="chatBox">
@@ -127,6 +216,7 @@
         const chatBox = document.getElementById('chatBox');
         const userInput = document.getElementById('userInput');
         const historyList = document.getElementById('historyList');
+        const settingsBackdrop = document.getElementById('settingsBackdrop');
 
         // --- 1. QUẢN LÝ LỊCH SỬ ---
         async function loadHistory() {
@@ -223,6 +313,79 @@
             localStorage.setItem('theme', isDark ? 'light' : 'dark');
         }
         
+        // --- 4. CÀI ĐẶT THAM SỐ AI ---
+        function openSettingsModal() {
+            settingsBackdrop.style.display = 'flex';
+            loadSettings();
+        }
+
+        function closeSettingsModal() {
+            settingsBackdrop.style.display = 'none';
+        }
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                if (data) {
+                    const t = Number(data.temperature) || 0.8;
+                    const mt = Number(data.max_tokens) || 512;
+                    const tp = Number(data.top_p) || 0.95;
+
+                    document.getElementById('tempRange').value = t;
+                    document.getElementById('maxTokensRange').value = mt;
+                    document.getElementById('toppRange').value = tp;
+
+                    document.getElementById('tempValue').innerText = t.toFixed(1);
+                    document.getElementById('maxTokensValue').innerText = mt;
+                    document.getElementById('toppValue').innerText = tp.toFixed(2);
+                }
+            } catch (e) {
+                console.error('Lỗi tải cài đặt:', e);
+            }
+        }
+
+        function syncTemp() {
+            const v = Number(document.getElementById('tempRange').value || 0.8);
+            document.getElementById('tempValue').innerText = v.toFixed(1);
+        }
+
+        function syncMaxTokens() {
+            const v = Number(document.getElementById('maxTokensRange').value || 512);
+            document.getElementById('maxTokensValue').innerText = v;
+        }
+
+        function syncTopP() {
+            const v = Number(document.getElementById('toppRange').value || 0.95);
+            document.getElementById('toppValue').innerText = v.toFixed(2);
+        }
+
+        async function saveSettings() {
+            let temp = Number(document.getElementById('tempRange').value || 0.8);
+            let maxTokens = Number(document.getElementById('maxTokensRange').value || 512);
+            let topP = Number(document.getElementById('toppRange').value || 0.95);
+
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        temperature: temp,
+                        max_tokens: maxTokens,
+                        top_p: topP
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    closeSettingsModal();
+                } else {
+                    alert(data.msg || 'Không lưu được cài đặt.');
+                }
+            } catch (e) {
+                alert('Lỗi kết nối khi lưu cài đặt.');
+            }
+        }
+
         // Init
         document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
         loadHistory(); // Tải lịch sử khi mở web

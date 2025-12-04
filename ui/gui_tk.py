@@ -13,11 +13,11 @@ from core.database_utils import MongoDBManager
 
 
 class SimpleChatGUI:
-    # main gui class
-    # Trong class SimpleChatGUI (cùng cấp với _create_ui và __init__)
+    # Lớp giao diện người dùng cho ứng dụng chat (dùng thư viện Tkinter)
+    # Chứa phần khởi tạo cửa sổ và các thành phần giao diện chính
 
     def _show_settings(self):
-        # show settings window - Dark theme đơn giản
+        # Hiển thị cửa sổ cài đặt đơn giản với giao diện nền tối
         settings = tk.Toplevel(self.root)
         settings.title("Cài Đặt")
         settings.geometry("450x350")

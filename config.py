@@ -1,24 +1,24 @@
-# config file for chat ai
-# all settings in one place
+ # File cấu hình cho ứng dụng chat
+ # Tập trung các tham số cần chỉnh sửa ở một nơi
 
-# model settings
+ # Cấu hình liên quan đến model
 MODEL_PATH = "models/python.gguf"
-N_CTX = 2048          # context window size
-N_THREADS = 4         # cpu threads to use
-N_BATCH = 16          # batch size
+N_CTX = 2048          # Kích thước cửa sổ ngữ cảnh
+N_THREADS = 4         # Số luồng CPU sử dụng khi suy luận
+N_BATCH = 16          # Kích thước batch khi suy luận
 
-# generation settings  
-TEMPERATURE = 0.8     # creativity level (0-2)
-TOP_P = 0.95         # top-p sampling
-MAX_TOKENS = 512     # max response length
+# Cấu hình sinh văn bản
+TEMPERATURE = 0.8     # Mức độ sáng tạo
+TOP_P = 0.95         # Lấy mẫu top-p
+MAX_TOKENS = 512      # Độ dài tối đa của văn bản sinh
 
-# conversation settings
-HISTORY_MAX_TURNS = 6  # how many turns to remember
+# Cấu hình số lượt hội thoại lưu lại
+HISTORY_MAX_TURNS = 6  # Số lượt hội thoại lưu lại
 
-# logging
-LOG_DIR = "logs"      # where to save logs
+# Cấu hình thư mục lưu log
+LOG_DIR = "logs"      # Thư mục lưu file log
 
-# get all config as dict (for compatibility)
+# Trả về toàn bộ cấu hình dưới dạng dict (dùng cho các module khác)
 def get_config():
     return {
         "model_path": MODEL_PATH,
@@ -32,14 +32,14 @@ def get_config():
         "log_dir": LOG_DIR
     }
 
-# validate config
+ # Hàm kiểm tra cấu hình có hợp lệ không
 def validate_config():
-    # check if model file exists
+    # Kiểm tra file model có tồn tại không
     import os
     if not os.path.exists(MODEL_PATH):
         return False, f"Model file not found: {MODEL_PATH}"
     
-    # check values are reasonable
+    # Kiểm tra các giá trị cấu hình có nằm trong khoảng cho phép
     if N_CTX < 256 or N_CTX > 8192:
         return False, "N_CTX should be between 256-8192"
     

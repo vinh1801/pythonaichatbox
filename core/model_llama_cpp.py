@@ -1,28 +1,28 @@
-# model wrapper for llama-cpp-python
-# handles model loading and text generation
+ # Lớp bao bọc thư viện llama-cpp-python
+ # Chịu trách nhiệm tải model và sinh văn bản
 import os
 from llama_cpp import Llama
 import config
 
 
 class ModelWrapper:
-    # wrapper class for the llama model
+    # Lớp quản lý model Llama và các tham số cấu hình
     
     def __init__(self):
-        # init the model wrapper with config
+        # Khởi tạo đối tượng, đọc cấu hình và gọi hàm tải model
         self.config = config.get_config()
         self.model = None
         self._initialize_model()
     
     def _validate_config(self):
-        # validate config from config.py
+        # Kiểm tra cấu hình trong file config.py có hợp lệ không
         is_valid, message = config.validate_config()
         if not is_valid:
             raise ValueError(f"Config error: {message}")
     
     def _initialize_model(self):
-        # load the actual model
-        self._validate_config()  # check config first
+        # Tải model từ đường dẫn cấu hình
+        self._validate_config()  # Kiểm tra cấu hình trước khi tải
         
         model_path = self.config.get('model_path')
         
@@ -44,11 +44,11 @@ class ModelWrapper:
             raise RuntimeError(f"Lỗi khi tải model: {e}")
     
     def generate(self, prompt, max_tokens=None, temperature=None, top_p=None, stream=None):
-        # generate text from prompt
+        # Gọi model để sinh văn bản từ prompt đầu vào
         if self.model is None:
             raise RuntimeError("Model chưa được khởi tạo")
         
-        # Sử dụng giá trị từ config nếu không được chỉ định
+        # Nếu tham số không được truyền vào thì dùng giá trị trong cấu hình
         max_tokens = max_tokens or self.config.get('max_tokens', 256)
         temperature = temperature or self.config.get('temperature', 0.7)
         top_p = top_p or self.config.get('top_p', 0.9)
@@ -63,7 +63,7 @@ class ModelWrapper:
             raise RuntimeError(f"Lỗi khi sinh text: {e}")
     
     def _generate_once(self, prompt, max_tokens, temperature, top_p):
-        # generate text in one go
+        # Sinh câu trả lời một lần, trả về toàn bộ chuỗi kết quả
         response = self.model(
             prompt,
             max_tokens=max_tokens,
@@ -76,7 +76,7 @@ class ModelWrapper:
         return response['choices'][0]['text'].strip()
     
     def _generate_stream(self, prompt, max_tokens, temperature, top_p):
-        # generate text as stream
+        # Sinh câu trả lời dạng từng phần, trả ra luồng văn bản
         stream = self.model(
             prompt,
             max_tokens=max_tokens,
@@ -94,14 +94,14 @@ class ModelWrapper:
                     yield delta
     
     def get_config(self):
-        # get current config
+        # Trả về bản sao cấu hình hiện tại của model
         return self.config.copy()
     
     def update_config(self, new_config):
-        # update config with new values
-        # note: this only updates runtime config, not config.py file
+        # Cập nhật một số tham số cấu hình trong lúc chương trình đang chạy
+        # Lưu ý: không ghi lại vào file config.py
         self.config.update(new_config)
     
     def is_ready(self):
-        # check if model is ready to use
+        # Kiểm tra model đã được tải thành công hay chưa
         return self.model is not None

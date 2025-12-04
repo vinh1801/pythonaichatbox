@@ -18,20 +18,26 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-2) Tải model GGUF và đặt vào `models/`:
+2) Tải model GGUF và đặt vào thư mục `models/`:
 - Mặc định trong `config.py`:
-  - `MODEL_PATH = "models/vietcuna-7b-v3.Q3_K_M.gguf"`
-- Hãy tải đúng file model `.gguf` tương ứng rồi đặt vào thư mục `models/`.
+  - `MODEL_PATH = "models/python.gguf"`
+- Bạn cần chuẩn bị sẵn file model định dạng `.gguf` (tên file `python.gguf`) và copy vào thư mục `models/`.
 
-3) Chạy ứng dụng:
-- Chế độ CLI:
+3) Chạy ứng dụng trên terminal (CLI):
 ```bash
 python app.py
 ```
 
-- Chế độ GUI (Tkinter):
+4) Chạy ứng dụng với giao diện GUI (Tkinter):
 ```bash
 python app.py --gui
+```
+
+5) Chạy giao diện web (Flask):
+- Cần có MongoDB đang chạy (ví dụ trên `mongodb://localhost:27017/`).
+- Sau đó chạy:
+```bash
+python web_app.py
 ```
 
 ## Cấu hình

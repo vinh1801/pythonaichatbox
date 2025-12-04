@@ -1,28 +1,28 @@
-# conversation manager
-# keeps track of chat history
+ # Lớp quản lý hội thoại
+ # Lưu trữ và xử lý lịch sử các lượt chat
 from collections import deque
 from typing import List, Dict, Any
 
 
 class ConversationManager:
-    # manages conversation history
+    # Lớp lưu và quản lý lịch sử hội thoại
     
     def __init__(self, config):
         self.config = config
         self.history = deque(maxlen=config.get('history_max_turns', 6) * 2)
         
     def add_user_message(self, message):
-        # add user message to history
+        # Thêm tin nhắn của người dùng vào lịch sử
         if message.strip():
             self.history.append({"role": "user", "content": message.strip()})
     
     def add_assistant_message(self, message):
-        # add ai response to history
+        # Thêm câu trả lời của mô hình vào lịch sử
         if message.strip():
             self.history.append({"role": "assistant", "content": message.strip()})
     
     def build_prompt(self, user_input):
-        # build prompt for the model
+        # Xây dựng chuỗi prompt gửi cho mô hình từ lịch sử và câu hỏi mới
         prompt_parts = []
         
         # Thêm lịch sử hội thoại (không bao gồm tin nhắn hiện tại)
@@ -41,19 +41,19 @@ class ConversationManager:
         return "\n".join(prompt_parts)
     
     def clear_history(self):
-        # clear all chat history
+        # Xóa toàn bộ lịch sử hội thoại đang lưu
         self.history.clear()
     
     def get_history_count(self):
-        # get number of messages in history
+        # Lấy số lượng tin nhắn đang có trong lịch sử
         return len(self.history)
     
     def is_history_full(self):
-        # check if history is full
+        # Kiểm tra lịch sử đã đầy đến giới hạn cấu hình hay chưa
         return len(self.history) >= self.history.maxlen
     
     def trim_history(self, keep_turns=3):
-        # remove old messages to save memory
+        # Cắt bớt các tin nhắn cũ, chỉ giữ lại một số lượt gần nhất
         if len(self.history) <= keep_turns * 2:
             return
         

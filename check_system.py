@@ -1,6 +1,6 @@
-# system checker script
-# run with: python check_system.py
-# TODO: add more checks later
+ # Tập tin kiểm tra nhanh hệ thống trước khi chạy ứng dụng
+ # Chạy bằng lệnh: python check_system.py
+ # Có thể bổ sung thêm các bước kiểm tra khác nếu cần
 
 import os
 import sys
@@ -10,7 +10,7 @@ import psutil
 from pathlib import Path
 
 def check_python_version():
-    # check if python version is ok
+    # Kiểm tra phiên bản Python có đáp ứng yêu cầu tối thiểu hay không
     version = sys.version_info
     print(f"Python version: {version.major}.{version.minor}.{version.micro}")
     
@@ -22,7 +22,7 @@ def check_python_version():
         return False
 
 def check_system_resources():
-    # check ram and cpu
+    # Kiểm tra tài nguyên hệ thống (RAM và CPU)
     print(f"\nHệ điều hành: {platform.system()} {platform.release()}")
     
     # RAM
@@ -46,7 +46,7 @@ def check_system_resources():
     return ram_gb >= 8 and cpu_count >= 4
 
 def check_dependencies():
-    # see if all packages are installed
+    # Kiểm tra các thư viện Python cần thiết đã được cài đặt chưa
     required_packages = [
         'llama_cpp',
         'colorama',
@@ -66,7 +66,7 @@ def check_dependencies():
     return len(missing) == 0
 
 def check_project_structure():
-    # make sure all files and folders exist
+    # Kiểm tra các file và thư mục quan trọng của dự án có đầy đủ không
     required_files = [
         'app.py',
         'config.py',
@@ -107,7 +107,7 @@ def check_project_structure():
     return len(missing_files) == 0 and len(missing_dirs) == 0
 
 def check_config():
-    # validate config.json file
+    # Kiểm tra file config.json có tồn tại và đúng định dạng không
     if not os.path.exists('config.json'):
         print("✗ Không tìm thấy config.json")
         return False
@@ -140,7 +140,7 @@ def check_config():
         return False
 
 def check_model():
-    # check if model file exists and is valid
+    # Kiểm tra file model có tồn tại và kích thước phù hợp không
     try:
         import config
         
@@ -171,7 +171,7 @@ def check_model():
         return False
 
 def main():
-    # main function that runs all checks
+    # Hàm chính gọi lần lượt các bước kiểm tra hệ thống
     print("=== KIỂM TRA HỆ THỐNG CHAT AI OFFLINE ===\n")
     
     checks = [

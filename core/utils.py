@@ -1,5 +1,5 @@
-# utility functions for chat ai
-# various helper functions
+ # Các hàm tiện ích dùng chung cho ứng dụng chat
+ # Bao gồm cấu hình ghi log và lưu lịch sử hội thoại ra file
 import os
 import json
 from datetime import datetime
@@ -8,7 +8,7 @@ import logging
 
 
 def setup_logging(log_dir="logs"):
-    # setup basic logging
+    # Thiết lập cấu hình ghi log cơ bản ra file và ra màn hình
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f"chat_{datetime.now().strftime('%Y%m%d')}.log")
     
@@ -23,7 +23,7 @@ def setup_logging(log_dir="logs"):
 
 
 def save_chat_log(user_message, assistant_message, log_dir="logs"):
-    # save chat conversation to log file
+    # Lưu một cặp câu hỏi/tra lời vào file log dạng JSON dòng
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, f"chat_{datetime.now().strftime('%Y-%m-%d')}.jsonl")
     
@@ -40,11 +40,11 @@ def save_chat_log(user_message, assistant_message, log_dir="logs"):
         logging.error(f"Lỗi lưu log: {e}")
 
 
-# removed validate_config - now handled in config.py
+ # Hàm validate_config cũ đã được chuyển sang xử lý trong config.py
 
 
 def get_model_info(model_path):
-    # get info about model file
+    # Lấy thông tin cơ bản về file model (tồn tại hay không, dung lượng)
     if not os.path.exists(model_path):
         return {"exists": False}
     

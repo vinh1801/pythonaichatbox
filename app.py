@@ -1,5 +1,5 @@
-# chat ai app - main file
-# made by: student
+ # Tập tin chính chạy ứng dụng chat trên terminal
+ # Sinh viên thực hiện bài tập
 
 import os
 import sys
@@ -16,24 +16,24 @@ colorama.init(autoreset=True)
 
 
 class ChatApp:
-    # main app class for chatting with AI
+    # Lớp chính điều khiển chương trình chat trên terminal
     
     def __init__(self):
-        self.config = config.get_config()  # get config from config.py
+        self.config = config.get_config()  # Đọc cấu hình từ file config.py
         self.model_wrapper = None
         self.conversation_manager = None
         
         setup_logging(self.config.get('log_dir', 'logs'))
         
     def _validate_config(self):
-        # check if config is valid
+        # Kiểm tra cấu hình hợp lệ trước khi chạy chương trình
         is_valid, message = config.validate_config()
         if not is_valid:
             print(f"{Fore.RED}Config error: {message}")
             sys.exit(1)
     
     def initialize(self):
-        # setup model and conversation stuff
+        # Khởi tạo model và bộ quản lý hội thoại
         print(f"{Fore.CYAN}Đang khởi tạo Chat AI...")
         
         # validate config first
@@ -55,7 +55,7 @@ class ChatApp:
             sys.exit(1)
     
     def run_cli(self):
-        # main chat loop
+        # Vòng lặp chính cho chế độ chat trên terminal
         print(f"\n{Fore.CYAN}🤖 CHAT AI OFFLINE")
         print(f"{Fore.CYAN}{'='*40}")
         print(f"{Fore.YELLOW}Gõ 'quit' để thoát, 'clear' để xóa lịch sử")
@@ -85,7 +85,7 @@ class ChatApp:
                 print(f"{Fore.RED}Lỗi: {e}")
     
     def _process_user_input(self, user_input):
-        # handle what user typed
+        # Xử lý câu nhập từ người dùng và sinh phản hồi
         print(f"{Fore.CYAN}🤖 AI đang suy nghĩ...")
         
         try:
@@ -109,7 +109,7 @@ class ChatApp:
 
 
 def main():
-    # main function - entry point
+    # Hàm main làm điểm bắt đầu chương trình
     parser = argparse.ArgumentParser(description='Chat AI Offline')
     parser.add_argument('--gui', action='store_true', help='Chạy GUI')
     
