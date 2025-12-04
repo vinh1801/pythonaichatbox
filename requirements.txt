@@ -1,0 +1,13 @@
+# Core dependencies
+llama-cpp-python>=0.2.0
+colorama>=0.4.6
+psutil>=5.9.0
+orjson>=3.9.0
+
+# Web & API
+flask>=2.0.0
+pymongo>=4.0.0
+werkzeug>=2.0.0
+
+# Optional / utilities
+tqdm>=4.64.0
