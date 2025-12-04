@@ -57,7 +57,7 @@
         }
         .history-item:hover { background: var(--hover-item); color: var(--text-main); }
         
-        .sidebar-footer { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .sidebar-footer { padding: 15px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
 
         /* MAIN CHAT (Bên phải) */
         .main-chat { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; }
@@ -82,6 +82,44 @@
         .icon-btn:hover { background: var(--hover-item); }
         .del-btn { color: #ef4444; border-color: #ef4444; }
         .del-btn:hover { background: #fee2e2; }
+
+        .pill-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+        .pill-btn {
+            flex: 1;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--bg-sidebar);
+            color: var(--text-main);
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .pill-btn:hover { background: var(--hover-item); }
+        .pill-btn-danger {
+            border-color: #fecaca;
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        .pill-btn-danger:hover {
+            background: #fee2e2;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .logout-btn:hover {
+            opacity: .9;
+        }
 
         /* Thanh trượt cài đặt AI */
         .slider-row {
@@ -184,14 +222,17 @@
             <div style="padding:10px; color:gray; font-style:italic">Đang tải lịch sử...</div>
         </div>
         
-        <div class="sidebar-footer" style="flex-direction: column; gap: 10px;">
+        <div class="sidebar-footer">
             <div style="display:flex; justify-content:space-between; align-items:center; color:var(--text-main); font-size:0.9rem; padding: 0 5px;">
                 <span>👤 {{ username }}</span>
-                <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Đổi giao diện">☀️</button>
+                <span style="font-size:0.8rem; color:var(--text-sub);">Online</span>
             </div>
-            <div style="display:flex; gap:5px">
-                <button class="icon-btn del-btn" onclick="clearAll()" style="flex:1" title="Xóa lịch sử">🗑️ Xóa</button>
-                <a href="/logout" class="icon-btn" style="text-decoration:none; text-align:center; background:#404040" title="Đăng xuất">🚪</a>
+            <div class="pill-buttons">
+                <button class="pill-btn" onclick="toggleTheme()" id="themeBtn">🌞 Theme</button>
+                <button class="pill-btn" onclick="openSettingsModal()">⚙️ Cài đặt</button>
+            </div>
+            <div class="pill-buttons">
+                <button class="pill-btn pill-btn-danger" style="flex:1" onclick="clearAll()">🗑️ Xóa hết</button>
             </div>
         </div>
     </div>
@@ -199,7 +240,7 @@
     <div class="main-chat">
         <div class="chat-header">
             <h3 style="margin:0">🤖 Chatbox AI</h3>
-            <button class="icon-btn" onclick="openSettingsModal()">Cài đặt tham số AI</button>
+            <a href="/logout"><button class="logout-btn">Đăng xuất</button></a>
         </div>
         
         <div class="chat-box" id="chatBox">
